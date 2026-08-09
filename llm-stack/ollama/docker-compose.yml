@@ -10,7 +10,9 @@ services:
       - "11434:11434"
     volumes:
       - ./ollama:/root/.ollama
-    # RTX 3060 12GB - NVIDIA GPU support
+    environment:
+      - OLLAMA_HOST=0.0.0.0
+      - OLLAMA_ORIGINS=*
     deploy:
       resources:
         reservations:
@@ -18,10 +20,5 @@ services:
             - driver: nvidia
               count: all
               capabilities: [gpu]
-    environment:
-      - OLLAMA_HOST=0.0.0.0
-      - OLLAMA_ORIGINS=*
-    deploy:
-      resources:
         limits:
-          memory: 32G  # Adjust based on your needs
+          memory: 32G
