@@ -1,0 +1,18 @@
+# Portainer - Container Management UI
+# Runs on Mini PC (Ubuntu Server)
+
+services:
+  portainer:
+    container_name: portainer
+    image: portainer/portainer-ce:latest
+    restart: unless-stopped
+    ports:
+      - "9443:9443"    # HTTPS
+      - "8000:8000"    # Agentless mode
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./portainer/data:/data
+    deploy:
+      resources:
+        limits:
+          memory: 256M

@@ -1,0 +1,17 @@
+global:
+  resolve_timeout: 5m
+
+route:
+  receiver: 'default-receiver'
+
+receivers:
+  - name: 'default-receiver'
+    # Configure your preferred notification method:
+    # email_configs, slack_configs, webhook_configs, etc.
+    # Example (email):
+    # email_configs:
+    #   - to: 'your-email@example.com'
+    #     from: 'alertmanager@example.com'
+    #     smarthost: 'smtp.example.com:587'
+    #     auth_username: 'your-email@example.com'
+    #     auth_password: 'your-password'

@@ -1,0 +1,26 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  # Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Node Exporter (system metrics)
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+
+  # Pi-hole metrics (if enabled)
+  # - job_name: 'pihole'
+  #   static_configs:
+  #     - targets: ['pi-hole:localhost']  # Pi-hole doesn't expose metrics natively
+  #       labels:
+  #         instance: 'pihole'
+
+  # Portainer metrics
+  - job_name: 'portainer'
+    static_configs:
+      - targets: ['portainer:9000']  # Portainer API

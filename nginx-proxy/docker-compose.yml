@@ -1,0 +1,23 @@
+# Nginx Proxy Manager - Reverse Proxy
+# Runs on Mini PC (Ubuntu Server)
+
+services:
+  nginx-proxy:
+    container_name: nginx-proxy
+    image: jc21/nginx-proxy-manager:latest
+    restart: unless-stopped
+    ports:
+      - "80:80"        # Public HTTP
+      - "81:81"        # Admin UI
+      - "443:443"      # Public HTTPS
+      - "8182:8182"    # Alternative port (if 81 conflicts)
+    volumes:
+      - ./nginx-proxy/data:/app/npm/data
+      - ./nginx-proxy/config:/app/npm/config
+      - ./nginx-proxy/letsencrypt:/etc/letsencrypt
+    networks:
+      - proxy-network
+
+networks:
+  proxy-network:
+    driver: bridge

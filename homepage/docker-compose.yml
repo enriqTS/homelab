@@ -1,0 +1,14 @@
+# Homepage - Dashboard
+# Runs on Mini PC (Ubuntu Server)
+
+services:
+  homepage:
+    container_name: homepage
+    image: gethomepage/homepage:latest
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    volumes:
+      - ./homepage/config:/app/config
+    environment:
+      TZ: "America/Sao_Paulo"
