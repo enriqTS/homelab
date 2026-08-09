@@ -1,0 +1,40 @@
+# Ollama - Local LLM runtime
+# Runs on Desktop (46GB RAM)
+
+services:
+  ollama:
+    container_name: ollama
+    image: ollama/ollama:latest
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    volumes:
+      - ./ollama:/root/.ollama
+    # GPU support - uncomment the appropriate section for your GPU
+    # NVIDIA GPUs:
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: all
+    #           capabilities: [gpu]
+    # AMD GPUs (ROCm):
+    # environment:
+    #   - HSA_OVERRIDE_GFX_VERSION=10.3.0
+    # volumes:
+    #   - /dev/kfd:/dev/kfd
+    #   - /dev/dri:/dev/dri
+    # Intel GPUs (oneAPI):
+    # environment:
+    #   - ONEAPI_DEVICE_SELECTOR=level0:gpu
+    # volumes:
+    #   - /dev/dri:/dev/dri
+    #   - /dev/dma_heap:/dev/dma_heap
+    environment:
+      - OLLAMA_HOST=0.0.0.0
+      - OLLAMA_ORIGINS=*
+    deploy:
+      resources:
+        limits:
+          memory: 32G  # Adjust based on your needs
