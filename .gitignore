@@ -8,6 +8,7 @@
 
 # Docker
 **/docker-compose.override.yml
+/llm-stack/ollama/ollama/
 
 # OS
 .DS_Store

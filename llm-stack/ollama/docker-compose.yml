@@ -5,14 +5,25 @@ services:
   ollama:
     container_name: ollama
     image: ollama/ollama:latest
-    restart: unless-stopped
+    # Docker is enabled at boot on the desktop; "always" brings Ollama back
+    # even after a manual stop followed by a Docker daemon/host restart.
+    restart: always
     ports:
       - "11434:11434"
     volumes:
       - ./ollama:/root/.ollama
     environment:
-      - OLLAMA_HOST=0.0.0.0
-      - OLLAMA_ORIGINS=*
+      OLLAMA_HOST: 0.0.0.0:11434
+      OLLAMA_ORIGINS: "*"
+      # Agent clients load models on their first request. Keep only one model
+      # resident, replacing it when another model is requested.
+      OLLAMA_MAX_LOADED_MODELS: "1"
+      # Ollama otherwise defaults this GPU to 4K, which is too small for
+      # repository-scale agent prompts while 32K remains practical on 12GB VRAM.
+      OLLAMA_CONTEXT_LENGTH: "32768"
+      # Clients do not emit a reliable "model deselected" event. Unload the
+      # inactive model after this idle period instead.
+      OLLAMA_KEEP_ALIVE: 5m
     deploy:
       resources:
         reservations:

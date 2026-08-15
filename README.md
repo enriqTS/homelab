@@ -104,6 +104,37 @@ docker exec -it ollama ollama pull mistral-nemo
 cd ../open-webui && docker compose up -d
 ```
 
+### Coding agents
+
+Ollama is configured for coding-agent use with these lifecycle rules:
+
+- Docker starts at boot and Compose uses `restart: always`, so the Ollama daemon returns after a reboot.
+- A model is loaded just in time by the first inference request; merely highlighting it in a client selector may not issue a request.
+- `OLLAMA_MAX_LOADED_MODELS=1` makes a request for another model replace the currently loaded model.
+- `OLLAMA_CONTEXT_LENGTH=32768` avoids Ollama's 4K default while fitting this desktop's 12 GB GPU; client metadata uses the same limit.
+- Coding clients do not consistently notify Ollama when a model is deselected or a client exits. `OLLAMA_KEEP_ALIVE=5m` therefore unloads it after five idle minutes.
+
+The local client configurations live outside this repository:
+
+| Client | Configuration / invocation |
+|--------|----------------------------|
+| Codex | `~/.codex/config.toml`; run `codex direct --oss -m llama3.2` |
+| Claude Code | `~/.claude/settings.json`; run `claude direct --model llama3.2` |
+| pi | `~/.pi/agent/models.json`; run `pi direct --model ollama/llama3.2` |
+| OpenCode | `~/.config/opencode/opencode.jsonc`; select `ollama/llama3.2` |
+
+`codex`, `claude`, and `pi` on this desktop are OpenShell launchers. Their disposable sandboxes intentionally do not import the host's provider configuration, and `localhost` inside a sandbox is not the host. Use their `direct` subcommand for the local Ollama endpoint. OpenCode currently runs directly on the host.
+
+Add every newly pulled Ollama model to pi's and OpenCode's model lists before selecting it. Claude accepts an installed Ollama model ID through `--model`; pass the model ID to Codex with `--oss -m <model>`.
+
+Useful lifecycle checks:
+
+```bash
+curl http://127.0.0.1:11434/api/version  # daemon health
+curl http://127.0.0.1:11434/api/ps       # models currently in memory
+docker exec ollama ollama stop llama3.2  # unload immediately when needed
+```
+
 ## GPU Setup (Desktop)
 
 RTX 3060 12GB — NVIDIA GPU support is pre-configured in Ollama's compose.
