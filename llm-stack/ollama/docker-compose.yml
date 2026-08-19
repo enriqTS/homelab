@@ -19,11 +19,17 @@ services:
       # resident, replacing it when another model is requested.
       OLLAMA_MAX_LOADED_MODELS: "1"
       # Ollama otherwise defaults this GPU to 4K, which is too small for
-      # repository-scale agent prompts while 32K remains practical on 12GB VRAM.
-      OLLAMA_CONTEXT_LENGTH: "32768"
+      # repository-scale agent prompts. 64K fits within the ~11.3GB usable VRAM
+      # (KV cache ~1.7GB with q8_0) while leaving margin for weights and buffers.
+      OLLAMA_CONTEXT_LENGTH: "65536"
       # Clients do not emit a reliable "model deselected" event. Unload the
       # inactive model after this idle period instead.
       OLLAMA_KEEP_ALIVE: 5m
+      # Speed optimizations that preserve output quality. Flash attention
+      # shrinks the KV cache and accelerates attention; q8_0 quantizes the KV
+      # cache near-losslessly. Both free VRAM so more model layers fit on GPU.
+      OLLAMA_FLASH_ATTENTION: "1"
+      OLLAMA_KV_CACHE_TYPE: q8_0
     deploy:
       resources:
         reservations:

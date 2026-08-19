@@ -13,5 +13,9 @@ services:
       - WEBUI_SECRET_KEY=changeme-generate-a-secret
     volumes:
       - ./open-webui/data:/app/data
-    depends_on:
-      - ollama
+    networks:
+      - ollama_default
+
+networks:
+  ollama_default:
+    external: true
