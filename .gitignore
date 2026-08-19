@@ -1,6 +1,9 @@
 # Volumes
 **/data/
 **/config/
+# But track SearXNG's required settings (JSON format + engines for Vane)
+!searxng/config/
+!searxng/config/settings.yml
 **/db/
 **/storage/
 **/var/lib/

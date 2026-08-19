@@ -1,0 +1,30 @@
+# Vane (formerly Perplexica) - AI-powered search engine frontend
+# Runs on Mini PC (Ubuntu Server), co-located with SearXNG.
+# Uses the local Ollama LLM (lfm2.5) on the Desktop via Tailscale.
+
+services:
+  vane:
+    container_name: vane
+    image: itzcrazykns1337/vane:slim-latest
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      # SearXNG runs in the sibling "searxng" compose project; both join the
+      # shared searxng-net bridge network. Start searxng first so it exists.
+      SEARXNG_API_URL: "http://searxng:8080"
+      # Ollama on the Desktop (CachyOS) over Tailscale. Replace the hostname
+      # with your Desktop's MagicDNS name (e.g. <machine>.tailnet.ts.net).
+      OLLAMA_BASE_URL: "http://henrique-desktop.tail640e58.ts.net:11434"
+    volumes:
+      - ./data:/home/vane/data
+    networks:
+      - searxng-net
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+
+networks:
+  searxng-net:
+    external: true

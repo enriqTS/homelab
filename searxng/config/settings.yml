@@ -1,0 +1,18 @@
+# SearXNG settings - merged over the image defaults.
+# JSON output is required by Vane (perplexica) to query results.
+# secret_key is provided by the SEARXNG_SECRET environment variable.
+
+use_default_settings: true
+
+general:
+  instance_name: "searxng"
+
+search:
+  autocomplete: 'google'
+  formats:
+    - html
+    - json
+
+engines:
+  - name: wolframalpha
+    disabled: false

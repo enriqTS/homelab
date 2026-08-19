@@ -9,6 +9,10 @@
 - Ollama API is expected on `http://127.0.0.1:11434` for local coding agents.
 - Docker is enabled at system boot. Compose uses `restart: always`, one resident model, a 32K context, and a five-minute idle keep-alive.
 
+## Search stack
+- SearXNG runs on the Mini PC with `searxng/config/settings.yml` (JSON output + wolframalpha enabled) and a shared `searxng-net` Docker network.
+- Vane (Perplexica fork) runs co-located on the Mini PC, joining `searxng-net` to reach SearXNG at `http://searxng:8080`, and talks to Ollama on the Desktop via Tailscale (`OLLAMA_BASE_URL`). Its data persists in `perplexica/data/`.
+
 ## Coding-agent integration
 - Host `codex`, `claude`, and `pi` commands are OpenShell launchers. Their disposable sandboxes do not import host local-provider files; use `codex direct`, `claude direct`, and `pi direct` for host-local Ollama unless OpenShell is intentionally extended later.
 - OpenCode runs directly on the host.

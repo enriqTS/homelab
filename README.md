@@ -42,6 +42,13 @@ Raspberry Pi (DNS), Mini PC (services), Desktop (LLM).
 | Homepage | 3001 | Mini PC | Service launcher dashboard |
 | Portainer | 9443 (HTTPS) | Mini PC | Container management UI |
 
+### Search
+
+| Service | Port | Node | Purpose |
+|---------|------|------|---------|
+| SearXNG | 8080 | Mini PC | Privacy-focused metasearch engine |
+| Vane (Perplexica) | 3000 | Mini PC | AI answering engine on top of SearXNG (uses Ollama) |
+
 ### Local LLM
 
 | Service | Port | Node | Purpose |
@@ -85,6 +92,12 @@ cd ../homepage && docker compose up -d
 
 # Portainer
 cd ../portainer && docker compose up -d
+
+# SearXNG
+cd ../searxng && docker compose up -d
+
+# Vane (Perplexica) - must start after SearXNG (shares its docker network)
+cd ../perplexica && docker compose up -d
 ```
 
 ### 3. Desktop (LLM)
@@ -182,6 +195,21 @@ RTX 3060 12GB — NVIDIA GPU support is pre-configured in Ollama's compose.
 - Admin UI: `http://<pi-ip>:8081`
 - Set upstream DNS in admin panel (e.g., `1.1.1.1`, `9.9.9.9`)
 - Optional: enable DHCP server in admin panel (may conflict with router)
+
+### SearXNG
+- Admin UI: `http://<mini-pc-ip>:8080`
+- `searxng/config/settings.yml` enables JSON output and the wolframalpha engine, both required by Vane; it is tracked in git despite `**/config/` being ignored
+- Secret key comes from `SEARXNG_SECRET` in the compose file (`openssl rand -hex 32`); replace the placeholder before exposing the instance
+- Valkey provides caching/rate-limiting for the limiter
+- Set `SEARXNG_BASE_URL` to your Tailscale URL (e.g., `http://searxng.tailnet.ts.net/`) for correct links
+- Expose via Nginx Proxy Manager or Tailscale for remote access
+
+### Vane (Perplexica)
+- UI: `http://<mini-pc-ip>:3000` — an AI answering engine that queries SearXNG and answers using the local Ollama model (`lfm2.5`)
+- `SEARXNG_API_URL` points at the co-located SearXNG over the shared `searxng-net` Docker network
+- `OLLAMA_BASE_URL` points at Ollama on the Desktop over Tailscale (e.g., `http://henrique-desktop.tailnet.ts.net:11434`); replace with your Desktop's MagicDNS name
+- On first start, the Ollama provider is auto-configured from env and lists all local models (`lfm2.5` included); pick it in the setup screen at `http://<mini-pc-ip>:3000`
+- Data/config is persisted in `perplexica/data/` (gitignored)
 
 ## Future Additions
 
