@@ -1,0 +1,26 @@
+---
+- name: Desktop - local LLM runtime
+  hosts: desktop
+  gather_facts: true
+  roles:
+    - docker
+    - deploy
+  post_tasks:
+    - name: Wait for Ollama API to come up
+      uri:
+        url: http://127.0.0.1:11434/api/tags
+        status_code: 200
+      register: ollama_ready
+      until: ollama_ready.status == 200
+      retries: 30
+      delay: 5
+
+    - name: Pull default Ollama models
+      uri:
+        url: http://127.0.0.1:11434/api/pull
+        method: POST
+        body_format: json
+        body:
+          name: "{{ item }}"
+        status_code: 200
+      loop: "{{ ollama_models }}"

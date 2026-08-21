@@ -1,0 +1,7 @@
+---
+- name: Mini PC - services, reverse proxy, monitoring, dashboard
+  hosts: minipc
+  gather_facts: true
+  roles:
+    - docker
+    - deploy

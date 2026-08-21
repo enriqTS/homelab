@@ -1,0 +1,15 @@
+---
+- name: Clone or update the homelab repository
+  git:
+    repo: "{{ repo_url }}"
+    dest: "{{ repo_path }}"
+    version: "{{ repo_branch | default('main') }}"
+    force: true
+    update: true
+
+- name: Deploy compose stacks in order
+  community.docker.docker_compose_v2:
+    project_src: "{{ repo_path }}/{{ item }}"
+    state: present
+    pull: missing
+  loop: "{{ deploy_stacks }}"

@@ -1,0 +1,7 @@
+---
+- name: Raspberry Pi - DNS/ad-blocking and Tailscale
+  hosts: pihole
+  gather_facts: true
+  roles:
+    - docker
+    - deploy
