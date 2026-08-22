@@ -216,7 +216,7 @@ Docker when needed. Install the NVIDIA drivers on CachyOS before running it.
 - UI: `http://<mini-pc-ip>:3003` — an AI answering engine that queries SearXNG and answers using the local Ollama model (`lfm2.5`)
 - `SEARXNG_API_URL` points at the co-located SearXNG over the shared `searxng-net` Docker network
 - `OLLAMA_BASE_URL` points at Ollama on the Desktop over Tailscale (e.g., `http://henrique-desktop.tailnet.ts.net:11434`); replace with your Desktop's MagicDNS name
-- On first start, the Ollama provider is auto-configured from env and lists all local models (`lfm2.5` included); pick it in the setup screen at `http://<mini-pc-ip>:3003`
+- On first start, the Ollama provider is auto-configured from env and lists all local models (`lfm2.5` and `embeddinggemma` included); pick `lfm2.5` for generation and `embeddinggemma` for embeddings in the setup screen at `http://<mini-pc-ip>:3003`
 - Data/config is persisted in `perplexica/data/` (gitignored)
 
 ## Future Additions

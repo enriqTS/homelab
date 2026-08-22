@@ -15,7 +15,19 @@
       retries: 30
       delay: 5
 
-    - name: Pull default Ollama models
+    - name: Remove retired Ollama models
+      uri:
+        url: http://127.0.0.1:11434/api/delete
+        method: DELETE
+        body_format: json
+        body:
+          model: "{{ item }}"
+        status_code:
+          - 200
+          - 404
+      loop: "{{ ollama_remove_models | default([]) }}"
+
+    - name: Pull configured Ollama models
       uri:
         url: http://127.0.0.1:11434/api/pull
         method: POST
