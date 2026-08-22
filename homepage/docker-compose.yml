@@ -12,3 +12,5 @@ services:
       - ./config:/app/config
     environment:
       TZ: "America/Sao_Paulo"
+      # Homepage rejects unlisted Host headers. Include local and MagicDNS URLs.
+      HOMEPAGE_ALLOWED_HOSTS: "localhost:3001,127.0.0.1:3001,henrique-notebook:3001,henrique-notebook.tail640e58.ts.net:3001"
