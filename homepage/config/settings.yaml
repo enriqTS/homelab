@@ -1,1 +1,13 @@
+---
 title: Homelab
+headerStyle: clean
+layout:
+  Apps:
+    style: row
+    columns: 2
+  Monitoring:
+    style: row
+    columns: 3
+  Management:
+    style: row
+    columns: 2

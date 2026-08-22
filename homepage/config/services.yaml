@@ -1,1 +1,27 @@
-[]
+---
+- Apps:
+    - Vane:
+        href: http://henrique-notebook.tail640e58.ts.net:3003
+        description: AI-powered search
+    - SearXNG:
+        href: http://henrique-notebook.tail640e58.ts.net:8080
+        description: Private metasearch
+
+- Monitoring:
+    - Grafana:
+        href: http://henrique-notebook.tail640e58.ts.net:3000
+        description: Dashboards and visualization
+    - Prometheus:
+        href: http://henrique-notebook.tail640e58.ts.net:9090
+        description: Metrics database
+    - Alertmanager:
+        href: http://henrique-notebook.tail640e58.ts.net:9093
+        description: Alert routing
+
+- Management:
+    - Nginx Proxy Manager:
+        href: http://henrique-notebook.tail640e58.ts.net:81
+        description: Reverse proxy and TLS management
+    - Portainer:
+        href: https://henrique-notebook.tail640e58.ts.net:9443
+        description: Container management

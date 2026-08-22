@@ -11,6 +11,10 @@ services:
       - "81:81"        # Admin UI
       - "443:443"      # Public HTTPS
       - "8182:8182"    # Alternative port (if 81 conflicts)
+    # Lets proxy hosts reach services published on the Docker host without
+    # coupling this Compose project to every service-specific network.
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     volumes:
       - ./data:/app/npm/data
       - ./config:/app/npm/config
