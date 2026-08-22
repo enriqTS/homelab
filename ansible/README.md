@@ -31,7 +31,8 @@ Edit [`inventory/hosts.yml`](inventory/hosts.yml) before deploying:
 - Set `repo_url`, `repo_branch`, and `repo_path` if the defaults do not apply.
 - Adjust `deploy_stacks` to change the stacks deployed to a node.
 - Set `ollama_models` to the models that should be pulled and `ollama_remove_models`
-  to models that should be removed on the desktop.
+  to models that should be removed on the desktop. Set `ollama_data_dir` when
+  migrating an existing Ollama model store into Ansible management.
 
 Keep credentials out of the inventory. Use SSH keys, Ansible Vault, or external
 secret management for anything sensitive.

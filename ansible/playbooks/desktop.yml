@@ -34,5 +34,7 @@
         body_format: json
         body:
           name: "{{ item }}"
+          stream: false
         status_code: 200
+        timeout: 1800
       loop: "{{ ollama_models }}"

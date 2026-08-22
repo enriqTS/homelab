@@ -7,6 +7,15 @@
     force: true
     update: true
 
+- name: Configure the persistent Ollama model directory
+  ansible.builtin.copy:
+    dest: "{{ repo_path }}/llm-stack/ollama/.env"
+    content: "OLLAMA_DATA_DIR={{ ollama_data_dir }}\n"
+    owner: root
+    group: root
+    mode: "0600"
+  when: ollama_data_dir is defined
+
 - name: Check whether TeamSpeak database credentials exist
   ansible.builtin.stat:
     path: "{{ repo_path }}/teamspeak/.env"
