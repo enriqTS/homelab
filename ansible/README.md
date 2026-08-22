@@ -25,7 +25,9 @@ ansible-galaxy collection install -r requirements.yml
 
 Edit [`inventory/hosts.yml`](inventory/hosts.yml) before deploying:
 
-- Replace the example `ansible_host` addresses and `ansible_user` values.
+- Replace the example `ansible_host` addresses and `ansible_user` values. This
+  deployment manages `henrique-notebook` locally and reaches
+  `henrique-desktop.tail640e58.ts.net` through Tailscale MagicDNS.
 - Set `repo_url`, `repo_branch`, and `repo_path` if the defaults do not apply.
 - Adjust `deploy_stacks` to change the stacks deployed to a node.
 - Set `ollama_models` to the models that should be pulled on the desktop.
