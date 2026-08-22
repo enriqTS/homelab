@@ -12,7 +12,7 @@ services:
       - OLLAMA_BASE_URL=http://ollama:11434
       - WEBUI_SECRET_KEY=changeme-generate-a-secret
     volumes:
-      - ./open-webui/data:/app/data
+      - ./data:/app/data
     networks:
       - ollama_default
 

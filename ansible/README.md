@@ -2,7 +2,8 @@
 
 These playbooks provision and deploy the homelab from an Ansible control machine.
 They install Docker and its Compose support, clone the repository to `/opt/homelab`
-on each target, and bring up the Compose stacks assigned to that host.
+on each target, and bring up the Compose stacks assigned to that host. Tailscale is
+managed natively on each host and is not a Compose stack.
 
 ## Prerequisites
 
@@ -11,6 +12,7 @@ on each target, and bring up the Compose stacks assigned to that host.
 - A configured SSH user with sudo privileges on every target
 - Network access from targets to GitHub, Docker package repositories, and container
   registries
+- Native Tailscale installed, enabled, and authorized on every target (`tailscale status`)
 
 Install the required collection once:
 
@@ -53,19 +55,20 @@ ansible-playbook playbooks/minipc.yml --limit minipc
 
 | Playbook | Stacks |
 |---|---|
-| `pihole.yml` | Tailscale, Pi-hole |
-| `minipc.yml` | Tailscale, Nginx Proxy Manager, Grafana stack, Homepage, Portainer, SearXNG, Vane (Perplexica) |
-| `desktop.yml` | Tailscale, Ollama, Open WebUI; also NVIDIA Container Toolkit and configured Ollama models |
+| `pihole.yml` | Pi-hole |
+| `minipc.yml` | Nginx Proxy Manager, Grafana stack, Homepage, Portainer, SearXNG, Vane (Perplexica) |
+| `desktop.yml` | Ollama, Open WebUI; also NVIDIA Container Toolkit and configured Ollama models |
 
 Stack order comes from `deploy_stacks` in the inventory. In particular, SearXNG
 starts before Vane because they share a Docker network.
 
 ## First deployment and updates
 
-Tailscale still requires interactive authorization after its container is started:
+Tailscale must already be authorized natively before running a playbook:
 
 ```bash
-ssh <user>@<node> 'sudo docker exec -it tailscale tailscale up'
+sudo tailscale up
+tailscale status
 ```
 
 Set the Pi-hole password separately after the Pi playbook's first run:

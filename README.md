@@ -1,7 +1,7 @@
 # Homelab
 
 Home server infrastructure for self-hosted services. Split across 3 nodes:
-Raspberry Pi (DNS), Mini PC (services), Desktop (LLM).
+Raspberry Pi (DNS), Mini PC (services), Desktop (LLM). Tailscale runs natively on each node.
 
 ## Architecture
 
@@ -18,7 +18,7 @@ Raspberry Pi (DNS), Mini PC (services), Desktop (LLM).
 | Service | Port | Node | Purpose |
 |---------|------|------|---------|
 | Pi-hole | 53 (DNS), 8081 (UI) | Pi | DNS + ad-blocking |
-| Tailscale | — | All | VPN/mesh network |
+| Tailscale (native daemon) | — | All | VPN/mesh network |
 
 ### Reverse Proxy
 
@@ -47,7 +47,7 @@ Raspberry Pi (DNS), Mini PC (services), Desktop (LLM).
 | Service | Port | Node | Purpose |
 |---------|------|------|---------|
 | SearXNG | 8080 | Mini PC | Privacy-focused metasearch engine |
-| Vane (Perplexica) | 3000 | Mini PC | AI answering engine on top of SearXNG (uses Ollama) |
+| Vane (Perplexica) | 3003 | Mini PC | AI answering engine on top of SearXNG (uses Ollama) |
 
 ### Local LLM
 
@@ -62,7 +62,8 @@ Deploy nodes with the Ansible playbooks in [`ansible/`](ansible/README.md), rath
 than running individual Compose projects manually. Ansible installs Docker, clones
 this repository to `/opt/homelab` on each managed host, and starts that node's
 stacks in the required order. The desktop playbook also installs the NVIDIA
-Container Toolkit and pulls its configured Ollama models.
+Container Toolkit and pulls its configured Ollama models. Install and authorize
+native Tailscale separately on every node before deployment.
 
 ### 1. Configure the inventory
 
@@ -87,13 +88,13 @@ sudo access. For password-based SSH or sudo, add `--ask-pass` and/or
 ```bash
 cd ~/Projetos/homelab/ansible
 
-# Raspberry Pi: Tailscale and Pi-hole
+# Raspberry Pi: Pi-hole
 ansible-playbook playbooks/pihole.yml
 
-# Mini PC: Tailscale, proxy, monitoring, dashboard, search, and Vane
+# Mini PC: proxy, monitoring, dashboard, search, and Vane
 ansible-playbook playbooks/minipc.yml
 
-# Desktop: Tailscale, Ollama, Open WebUI, NVIDIA toolkit, and Ollama models
+# Desktop: Ollama, Open WebUI, NVIDIA toolkit, and Ollama models
 ansible-playbook playbooks/desktop.yml
 ```
 
@@ -103,14 +104,13 @@ managed stacks and common commands.
 
 ### 4. Complete first-run setup
 
-Authorize Tailscale on each node after its playbook completes:
+Confirm that native Tailscale is authorized on every node:
 
 ```bash
-ssh <user>@<node> 'sudo docker exec -it tailscale tailscale up'
+tailscale status
 ```
 
-Follow the authorization URL, then set the Pi-hole password and point the router's
-DNS at the Pi:
+Then set the Pi-hole password and point the router's DNS at the Pi:
 
 ```bash
 ssh pi@<pi-ip> 'sudo docker exec -it pihole pihole -a -p'
@@ -183,9 +183,9 @@ Docker when needed. Install the NVIDIA drivers on CachyOS before running it.
 - Set up proxy hosts for internal services after deployment
 
 ### Tailscale
-- Run `docker exec -it <container> tailscale up` on each node
-- Use Tailscale's MagicDNS for internal service discovery
-- Services reachable at `*.tailscale.local` (e.g., `grafana.tailscale.local`)
+- Tailscale runs as the native `tailscaled` system service on every node; it is not deployed as a Compose stack.
+- Authorize each node with `sudo tailscale up`, then verify it with `tailscale status`.
+- Use MagicDNS for internal service discovery (for example, `<host>.<tailnet>.ts.net`).
 
 ### Pi-hole
 - Admin UI: `http://<pi-ip>:8081`
@@ -201,10 +201,10 @@ Docker when needed. Install the NVIDIA drivers on CachyOS before running it.
 - Expose via Nginx Proxy Manager or Tailscale for remote access
 
 ### Vane (Perplexica)
-- UI: `http://<mini-pc-ip>:3000` — an AI answering engine that queries SearXNG and answers using the local Ollama model (`lfm2.5`)
+- UI: `http://<mini-pc-ip>:3003` — an AI answering engine that queries SearXNG and answers using the local Ollama model (`lfm2.5`)
 - `SEARXNG_API_URL` points at the co-located SearXNG over the shared `searxng-net` Docker network
 - `OLLAMA_BASE_URL` points at Ollama on the Desktop over Tailscale (e.g., `http://henrique-desktop.tailnet.ts.net:11434`); replace with your Desktop's MagicDNS name
-- On first start, the Ollama provider is auto-configured from env and lists all local models (`lfm2.5` included); pick it in the setup screen at `http://<mini-pc-ip>:3000`
+- On first start, the Ollama provider is auto-configured from env and lists all local models (`lfm2.5` included); pick it in the setup screen at `http://<mini-pc-ip>:3003`
 - Data/config is persisted in `perplexica/data/` (gitignored)
 
 ## Future Additions

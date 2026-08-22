@@ -8,7 +8,7 @@ services:
     image: itzcrazykns1337/vane:slim-latest
     restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "3003:3000"
     environment:
       # SearXNG runs in the sibling "searxng" compose project; both join the
       # shared searxng-net bridge network. Start searxng first so it exists.

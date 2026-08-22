@@ -31,8 +31,8 @@ services:
     ports:
       - "9090:9090"
     volumes:
-      - ./grafana-stack/prometheus:/etc/prometheus
-      - ./grafana-stack/data/prometheus:/prometheus
+      - ./prometheus:/etc/prometheus
+      - ./data/prometheus:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
@@ -51,8 +51,8 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - ./grafana-stack/data/grafana:/var/lib/grafana
-      - ./grafana-stack/provisioning:/etc/grafana/provisioning
+      - ./data/grafana:/var/lib/grafana
+      - ./provisioning:/etc/grafana/provisioning
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=changeme  # Change this!
@@ -72,7 +72,7 @@ services:
     ports:
       - "9093:9093"
     volumes:
-      - ./grafana-stack/alertmanager:/etc/alertmanager
+      - ./alertmanager:/etc/alertmanager
     command:
       - '--config.file=/etc/alertmanager/alertmanager.yml'
       - '--storage.path=/alertmanager'

@@ -12,9 +12,9 @@ services:
       - "443:443"      # Public HTTPS
       - "8182:8182"    # Alternative port (if 81 conflicts)
     volumes:
-      - ./nginx-proxy/data:/app/npm/data
-      - ./nginx-proxy/config:/app/npm/config
-      - ./nginx-proxy/letsencrypt:/etc/letsencrypt
+      - ./data:/app/npm/data
+      - ./config:/app/npm/config
+      - ./letsencrypt:/etc/letsencrypt
     networks:
       - proxy-network
 
