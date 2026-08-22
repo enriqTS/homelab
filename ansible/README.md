@@ -58,7 +58,7 @@ ansible-playbook playbooks/minipc.yml --limit minipc
 | Playbook | Stacks |
 |---|---|
 | `pihole.yml` | Pi-hole |
-| `minipc.yml` | Nginx Proxy Manager, Grafana stack, Homepage, Portainer, SearXNG, Vane (Perplexica) |
+| `minipc.yml` | Nginx Proxy Manager, Grafana stack, Homepage, Portainer, SearXNG, Vane (Perplexica), TeamSpeak |
 | `desktop.yml` | Ollama, Open WebUI; also NVIDIA Container Toolkit and configured Ollama models |
 
 Stack order comes from `deploy_stacks` in the inventory. In particular, SearXNG

@@ -1,5 +1,11 @@
 # TeamSpeak 6 - WebQuery
 
+TeamSpeak is deployed on the Mini PC by `ansible-playbook playbooks/minipc.yml`.
+On its first run, Ansible creates random database credentials in
+`/opt/homelab/teamspeak/.env`; this file is mode `0600`, is not committed, and
+must be backed up with the named Docker volumes. Connect TeamSpeak clients over
+Tailscale at `henrique-notebook.tail640e58.ts.net:9987`.
+
 WebQuery is the JSON-based REST API built into the TeamSpeak 6 server. It lets you
 read server state and run admin commands over plain HTTP — no extra tools needed.
 

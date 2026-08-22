@@ -11,23 +11,25 @@ services:
       - "30033:30033/tcp" # File transfer port
       - "10080:10080/tcp" # WebQuery port
       # - "10022:10022/tcp" # SSHQuery port
+    env_file:
+      - .env
     environment:
-      - TSSERVER_LICENSE_ACCEPTED=accept
-      - TSSERVER_DEFAULT_PORT=9987
-      - TSSERVER_VOICE_IP=0.0.0.0
-      - TSSERVER_FILE_TRANSFER_PORT=30033
-      - TSSERVER_FILE_TRANSFER_IP=0.0.0.0
-      - TSSERVER_QUERY_HTTP_ENABLED=true
-      # - TSSERVER_QUERY_SSH_ENABLED=true
+      TSSERVER_LICENSE_ACCEPTED: accept
+      TSSERVER_DEFAULT_PORT: 9987
+      TSSERVER_VOICE_IP: 0.0.0.0
+      TSSERVER_FILE_TRANSFER_PORT: 30033
+      TSSERVER_FILE_TRANSFER_IP: 0.0.0.0
+      TSSERVER_QUERY_HTTP_ENABLED: "true"
+      # TSSERVER_QUERY_SSH_ENABLED: "true"
 
       # Database settings
-      - TSSERVER_DATABASE_PLUGIN=mariadb
-      - TSSERVER_DATABASE_SQL_CREATE_PATH=create_mariadb
-      - TSSERVER_DATABASE_HOST=mariadb
-      - TSSERVER_DATABASE_PORT=3306
-      - TSSERVER_DATABASE_NAME=teamspeak
-      - TSSERVER_DATABASE_USERNAME=teamspeak
-      - TSSERVER_DATABASE_PASSWORD=YourPasswordHere
+      TSSERVER_DATABASE_PLUGIN: mariadb
+      TSSERVER_DATABASE_SQL_CREATE_PATH: create_mariadb
+      TSSERVER_DATABASE_HOST: mariadb
+      TSSERVER_DATABASE_PORT: 3306
+      TSSERVER_DATABASE_NAME: teamspeak
+      TSSERVER_DATABASE_USERNAME: teamspeak
+      TSSERVER_DATABASE_PASSWORD: ${TEAMSPEAK_DB_PASSWORD:?TEAMSPEAK_DB_PASSWORD must be set}
     volumes:
       - teamspeak-data:/var/tsserver
     depends_on:
@@ -36,12 +38,14 @@ services:
 
   mariadb:
     image: mariadb:latest
-    container_name: mariadb
+    container_name: teamspeak-mariadb
+    env_file:
+      - .env
     environment:
-      - MYSQL_ROOT_PASSWORD=SuperSecretPassword
-      - MYSQL_DATABASE=teamspeak
-      - MYSQL_USER=teamspeak
-      - MYSQL_PASSWORD=YourPasswordHere
+      MYSQL_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD:?MARIADB_ROOT_PASSWORD must be set}
+      MYSQL_DATABASE: teamspeak
+      MYSQL_USER: teamspeak
+      MYSQL_PASSWORD: ${TEAMSPEAK_DB_PASSWORD:?TEAMSPEAK_DB_PASSWORD must be set}
     volumes:
       - mariadb-data:/var/lib/mysql
     restart: unless-stopped

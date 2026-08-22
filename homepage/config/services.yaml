@@ -1,5 +1,8 @@
 ---
 - Apps:
+    - TeamSpeak:
+        href: ts3server://henrique-notebook.tail640e58.ts.net?port=9987
+        description: Private voice server
     - Vane:
         href: http://henrique-notebook.tail640e58.ts.net:3003
         description: AI-powered search

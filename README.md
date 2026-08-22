@@ -49,6 +49,12 @@ Raspberry Pi (DNS), Mini PC (services), Desktop (LLM). Tailscale runs natively o
 | SearXNG | 8080 | Mini PC | Privacy-focused metasearch engine |
 | Vane (Perplexica) | 3003 | Mini PC | AI answering engine on top of SearXNG (uses Ollama) |
 
+### Voice
+
+| Service | Port | Node | Purpose |
+|---------|------|------|---------|
+| TeamSpeak 6 | 9987/UDP (voice), 30033/TCP (files), 10080/TCP (WebQuery) | Mini PC | Private voice server |
+
 ### Local LLM
 
 | Service | Port | Node | Purpose |
@@ -91,7 +97,7 @@ cd ~/Projetos/homelab/ansible
 # Raspberry Pi: Pi-hole
 ansible-playbook playbooks/pihole.yml
 
-# Mini PC: proxy, monitoring, dashboard, search, and Vane
+# Mini PC: proxy, monitoring, dashboard, search, Vane, and TeamSpeak
 ansible-playbook playbooks/minipc.yml
 
 # Desktop: Ollama, Open WebUI, NVIDIA toolkit, and Ollama models
@@ -199,6 +205,12 @@ Docker when needed. Install the NVIDIA drivers on CachyOS before running it.
 - Valkey provides caching/rate-limiting for the limiter
 - Set `SEARXNG_BASE_URL` to your Tailscale URL (e.g., `http://searxng.tailnet.ts.net/`) for correct links
 - Expose via Nginx Proxy Manager or Tailscale for remote access
+
+### TeamSpeak
+- Connect the TeamSpeak client to `henrique-notebook.tail640e58.ts.net:9987` while connected to the tailnet.
+- WebQuery is at `http://henrique-notebook.tail640e58.ts.net:10080`; it is an authenticated API, not a browser UI.
+- Invite friends to the tailnet and restrict their access with a Tailscale ACL before sharing the server address.
+- Ansible generates the database credentials in `/opt/homelab/teamspeak/.env` during the first deployment. Back up that file with the TeamSpeak volumes; never commit it.
 
 ### Vane (Perplexica)
 - UI: `http://<mini-pc-ip>:3003` — an AI answering engine that queries SearXNG and answers using the local Ollama model (`lfm2.5`)

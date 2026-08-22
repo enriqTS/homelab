@@ -7,6 +7,35 @@
     force: true
     update: true
 
+- name: Check whether TeamSpeak database credentials exist
+  ansible.builtin.stat:
+    path: "{{ repo_path }}/teamspeak/.env"
+  register: teamspeak_env
+  when: "'teamspeak' in deploy_stacks"
+
+- name: Generate TeamSpeak database credentials
+  ansible.builtin.command: >-
+    {{ ansible_python.executable | default('/usr/bin/python3') }} -c
+    "import secrets; print('TEAMSPEAK_DB_PASSWORD=' + secrets.token_urlsafe(32)); print('MARIADB_ROOT_PASSWORD=' + secrets.token_urlsafe(32))"
+  register: teamspeak_generated_credentials
+  changed_when: false
+  no_log: true
+  when:
+    - "'teamspeak' in deploy_stacks"
+    - not teamspeak_env.stat.exists
+
+- name: Persist TeamSpeak database credentials
+  ansible.builtin.copy:
+    dest: "{{ repo_path }}/teamspeak/.env"
+    content: "{{ teamspeak_generated_credentials.stdout }}\n"
+    owner: root
+    group: root
+    mode: "0600"
+  no_log: true
+  when:
+    - "'teamspeak' in deploy_stacks"
+    - not teamspeak_env.stat.exists
+
 - name: Create monitoring data directories with container ownership
   ansible.builtin.file:
     path: "{{ repo_path }}/{{ item.path }}"
