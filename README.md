@@ -56,65 +56,64 @@ Raspberry Pi (DNS), Mini PC (services), Desktop (LLM).
 | Ollama | 11434 | Desktop | LLM runtime (API) |
 | Open WebUI | 3002 | Desktop | Web chat interface |
 
-## Quick Start
+## Deployment
 
-### 1. Raspberry Pi (DNS)
+Deploy nodes with the Ansible playbooks in [`ansible/`](ansible/README.md), rather
+than running individual Compose projects manually. Ansible installs Docker, clones
+this repository to `/opt/homelab` on each managed host, and starts that node's
+stacks in the required order. The desktop playbook also installs the NVIDIA
+Container Toolkit and pulls its configured Ollama models.
+
+### 1. Configure the inventory
+
+On the Ansible control machine, clone this repository and update
+[`ansible/inventory/hosts.yml`](ansible/inventory/hosts.yml) with each node's IP
+address, SSH user, repository URL/branch, and the Ollama models to pull. The
+included inventory contains example private-network addresses and usernames.
+
+### 2. Install the Ansible dependency
 
 ```bash
-# Clone and deploy
-cd ~/Projetos/homelab/pi-hole
-docker compose up -d
-
-# Set admin password (first run)
-docker exec -it pihole pihole -a -p
+cd ~/Projetos/homelab/ansible
+ansible-galaxy collection install -r requirements.yml
 ```
 
-Set your router's DNS to the Pi's IP address.
+Ensure the control machine can SSH to every host and that the configured user has
+sudo access. For password-based SSH or sudo, add `--ask-pass` and/or
+`--ask-become-pass` to the commands below.
 
-### 2. Mini PC (Services)
+### 3. Run the playbook for each node
 
 ```bash
-# Clone and deploy in order
-cd ~/Projetos/homelab
+cd ~/Projetos/homelab/ansible
 
-# Tailscale (connect all nodes)
-cd tailscale && docker compose up -d
-docker exec -it tailscale tailscale up   # follow auth URL
+# Raspberry Pi: Tailscale and Pi-hole
+ansible-playbook playbooks/pihole.yml
 
-# Nginx Proxy Manager
-cd ../nginx-proxy && docker compose up -d
+# Mini PC: Tailscale, proxy, monitoring, dashboard, search, and Vane
+ansible-playbook playbooks/minipc.yml
 
-# Grafana Stack
-cd ../grafana-stack && docker compose up -d
-
-# Homepage
-cd ../homepage && docker compose up -d
-
-# Portainer
-cd ../portainer && docker compose up -d
-
-# SearXNG
-cd ../searxng && docker compose up -d
-
-# Vane (Perplexica) - must start after SearXNG (shares its docker network)
-cd ../perplexica && docker compose up -d
+# Desktop: Tailscale, Ollama, Open WebUI, NVIDIA toolkit, and Ollama models
+ansible-playbook playbooks/desktop.yml
 ```
 
-### 3. Desktop (LLM)
+The playbooks are idempotent; rerun the relevant one after changing the repository
+or a node's configuration. See [`ansible/README.md`](ansible/README.md) for the
+managed stacks and common commands.
+
+### 4. Complete first-run setup
+
+Authorize Tailscale on each node after its playbook completes:
 
 ```bash
-# Ensure NVIDIA Container Toolkit is installed
-# https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html
+ssh <user>@<node> 'sudo docker exec -it tailscale tailscale up'
+```
 
-cd ~/Projetos/homelab/llm-stack/ollama
-docker compose up -d
+Follow the authorization URL, then set the Pi-hole password and point the router's
+DNS at the Pi:
 
-# Pull models
-docker exec -it ollama ollama pull llama3.2
-docker exec -it ollama ollama pull mistral-nemo
-
-# Optional: Open WebUI
-cd ../open-webui && docker compose up -d
+```bash
+ssh pi@<pi-ip> 'sudo docker exec -it pihole pihole -a -p'
 ```
 
 ### Coding agents
@@ -150,12 +149,9 @@ docker exec ollama ollama stop llama3.2  # unload immediately when needed
 
 ## GPU Setup (Desktop)
 
-RTX 3060 12GB — NVIDIA GPU support is pre-configured in Ollama's compose.
-
-**Prerequisites:**
-1. NVIDIA drivers installed on CachyOS
-2. NVIDIA Container Toolkit: `sudo pacman -S nvidia-container-toolkit`
-3. Restart Docker: `sudo systemctl restart docker`
+RTX 3060 12GB — NVIDIA GPU support is pre-configured in Ollama's Compose file.
+The desktop Ansible playbook installs the NVIDIA Container Toolkit and restarts
+Docker when needed. Install the NVIDIA drivers on CachyOS before running it.
 
 ### Model Recommendations (12GB VRAM)
 
