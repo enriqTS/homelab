@@ -128,7 +128,7 @@ Ollama is configured for coding-agent use with these lifecycle rules:
 
 - Docker starts at boot and Compose uses `restart: always`, so the Ollama daemon returns after a reboot.
 - A model is loaded just in time by the first inference request; merely highlighting it in a client selector may not issue a request.
-- `OLLAMA_MAX_LOADED_MODELS=1` makes a request for another model replace the currently loaded model.
+- `OLLAMA_MAX_LOADED_MODELS=2` keeps Vane's `lfm2.5` generation model and `embeddinggemma` resident together. A third model, or GPU-memory pressure, may replace a resident model.
 - `OLLAMA_CONTEXT_LENGTH=32768` avoids Ollama's 4K default while fitting this desktop's 12 GB GPU; client metadata uses the same limit.
 - Coding clients do not consistently notify Ollama when a model is deselected or a client exits. `OLLAMA_KEEP_ALIVE=5m` therefore unloads it after five idle minutes.
 

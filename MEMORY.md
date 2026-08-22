@@ -7,7 +7,7 @@
 ## Current hardware and runtime
 - Desktop GPU: NVIDIA RTX 3060 12 GB; host RAM: 46 GB.
 - Ollama API is expected on `http://127.0.0.1:11434` for local coding agents.
-- Docker is enabled at system boot. Compose uses `restart: always`, one resident model, a 32K context, and a five-minute idle keep-alive.
+- Docker is enabled at system boot. Compose uses `restart: always`, up to two resident models, a 64K context, and a five-minute idle keep-alive.
 
 ## Search stack
 - SearXNG runs on the Mini PC with `searxng/config/settings.yml` (JSON output + wolframalpha enabled) and a shared `searxng-net` Docker network.
@@ -17,4 +17,4 @@
 - Host `codex`, `claude`, and `pi` commands are OpenShell launchers. Their disposable sandboxes do not import host local-provider files; use `codex direct`, `claude direct`, and `pi direct` for host-local Ollama unless OpenShell is intentionally extended later.
 - OpenCode runs directly on the host.
 - Active host provider files are `~/.codex/config.toml`, `~/.claude/settings.json`, `~/.pi/agent/models.json`, and `~/.config/opencode/opencode.jsonc`. LM Studio entries were removed in August 2026.
-- Model selection itself does not reliably notify Ollama. First inference JIT-loads a model; `OLLAMA_MAX_LOADED_MODELS=1` replaces the resident model on a switch, and `OLLAMA_KEEP_ALIVE=5m` handles deselection/client-exit by idle expiry.
+- Model selection itself does not reliably notify Ollama. First inference JIT-loads a model; `OLLAMA_MAX_LOADED_MODELS=2` keeps Vane's generation/embedding pair resident, while a third model or GPU pressure can evict one. `OLLAMA_KEEP_ALIVE=5m` handles deselection/client-exit by idle expiry.

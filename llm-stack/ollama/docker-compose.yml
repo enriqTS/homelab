@@ -15,9 +15,9 @@ services:
     environment:
       OLLAMA_HOST: 0.0.0.0:11434
       OLLAMA_ORIGINS: "*"
-      # Agent clients load models on their first request. Keep only one model
-      # resident, replacing it when another model is requested.
-      OLLAMA_MAX_LOADED_MODELS: "1"
+      # Keep Vane's generation and embedding models resident together. A third
+      # model, or GPU-memory pressure, causes Ollama to unload a resident model.
+      OLLAMA_MAX_LOADED_MODELS: "2"
       # Ollama otherwise defaults this GPU to 4K, which is too small for
       # repository-scale agent prompts. 64K fits within the ~11.3GB usable VRAM
       # (KV cache ~1.7GB with q8_0) while leaving margin for weights and buffers.
