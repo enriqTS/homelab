@@ -7,6 +7,22 @@
     force: true
     update: true
 
+- name: Create monitoring data directories with container ownership
+  ansible.builtin.file:
+    path: "{{ repo_path }}/{{ item.path }}"
+    state: directory
+    owner: "{{ item.owner }}"
+    group: "{{ item.group }}"
+    mode: "0750"
+  loop:
+    - path: grafana-stack/data/prometheus
+      owner: "65534"
+      group: "65534"
+    - path: grafana-stack/data/grafana
+      owner: "472"
+      group: "0"
+  when: "'grafana-stack' in deploy_stacks"
+
 - name: Deploy compose stacks in order
   community.docker.docker_compose_v2:
     project_src: "{{ repo_path }}/{{ item }}"
