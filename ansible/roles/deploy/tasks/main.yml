@@ -28,4 +28,6 @@
     project_src: "{{ repo_path }}/{{ item }}"
     state: present
     pull: missing
+    wait: true
+    wait_timeout: 120
   loop: "{{ deploy_stacks }}"
